@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    <div class="roads">
+            <img class='card-img2' src="{% static data.transition_img %}" alt="chair" style="width:100%">
+            <li>{{ data.transition }}</li>
+    </div>
+
+{% endblock %}
+

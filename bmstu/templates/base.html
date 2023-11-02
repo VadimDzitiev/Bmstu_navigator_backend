@@ -1,0 +1,16 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+  <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link  rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" >
+</head>
+<body>
+    <div class="hello">Маршруты между кампусами МГТУ</div>
+    {% block input %}{% endblock %}
+    {% block content %}{% endblock %}
+
+</body>
+</html>
+
