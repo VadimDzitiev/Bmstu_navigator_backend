@@ -5,14 +5,13 @@
 
 
 {% block content %}
-<link  rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" >
-
 <div class="my-block">
 
-{% for transition in data.main.transitions %}
+{% for transition in main %}
     <div class="card">
-        <img class='card-img1' src="{% static transition.img_url %}" alt="image" style="width:100%">
-        <a href="{% url 'campus_url' transition.id %}">{{ transition.from }} - {{ transition.to }}</a>
+        <img class='card-img1' src="data:image/png;base64,{{ transition.building }}" alt="image" style="width:100%">
+        <a href="{% url 'campus_url' transition.id %}">{{ transition.name }}</a>
+        <a href="{% url 'freeze_transition' transition.id %}">Удалить</a>
     </div>
 {% empty %}
     <div class="card">
@@ -28,9 +27,8 @@
 <div class="search">
   <form action=""  method="get">
     <label for="text">Введите маршрут</label><br>
-    <input id="text" name="Маршрут" type="text" value={{data.query_c}}>
+    <input id="text" name="Маршрут" type="text" value={{query_c}}>
     <input type="submit" value="Поиск">
   </form>
 </div>
 {% endblock %}
-
