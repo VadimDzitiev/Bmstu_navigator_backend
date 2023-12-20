@@ -1,8 +1,6 @@
-from .models import Service
-from .models import Request
-from .models import UserProfile
-from .models import RequestService
+from .models import *
 from rest_framework import serializers
+from collections import OrderedDict
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -12,18 +10,23 @@ class ServiceSerializer(serializers.ModelSerializer):
         # Поля, которые мы сериализуем
         fields = "__all__"
 
+
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         # Модель, которую мы сериализуем
         model = Request
         # Поля, которые мы сериализуем
         fields = "__all__"
-class UserProfileSerializer(serializers.ModelSerializer):
+
+
+class UserSerializer(serializers.ModelSerializer):
+    is_moderator = serializers.BooleanField(default=False, required=False)
+
     class Meta:
-        # Модель, которую мы сериализуем
-        model = UserProfile
-        # Поля, которые мы сериализуем
-        fields = "__all__"
+        model = Users
+        fields = ['email', 'password', 'is_moderator']
+
+
 class RequestServiceSerializer(serializers.ModelSerializer):
     class Meta:
         # Модель, которую мы сериализуем

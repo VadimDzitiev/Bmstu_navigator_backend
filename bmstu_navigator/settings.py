@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+AUTH_USER_MODEL = 'bmstu.Users'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,8 +38,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bmstu','bmstu_navigator'
+    'bmstu','bmstu_navigator',
+    'rest_framework',
+   # 'corsheaders',
+    'drf_yasg',
+
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ]
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +64,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+   'http://localhost:3000',
 ]
 
 ROOT_URLCONF = 'bmstu_navigator.urls'
@@ -67,6 +88,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -75,12 +98,8 @@ DATABASES = {
         'PASSWORD': '1315151312',
         'HOST': 'localhost',
         'PORT': 5432,
-        'OPTIONS': {
-            'client_encoding': 'utf8',
-        },
-        'TEST': {
-            'CHARSET': 'utf8',
-        },
+        # 'OPTIONS': {client_encoding': 'utf8'},
+        # 'TEST': {'CHARSET': 'utf8'},
     }
 }
 WSGI_APPLICATION = 'bmstu_navigator.wsgi.application'
@@ -125,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS=[
+STATICFILES_DIRS = [
     BASE_DIR / "bmstu/static/"
 ]
 
