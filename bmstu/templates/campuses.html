@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% endblock %}
+
+
+{% block content %}
+<div class="my-block">
+
+{% for transition in main %}
+    <div class="card">
+        <img class='card-img1' src="data:image/png;base64,{{ transition.building }}" alt="image" style="width:100%">
+        <a href="{% url 'campus_url' transition.id %}">{{ transition.name }}</a>
+        <a href="{% url 'freeze_transition' transition.id %}">Удалить</a>
+    </div>
+{% empty %}
+    <div class="card">
+        <p>Список пуст</p>
+    </div>
+{% endfor %}
+
+</div>
+{% endblock %}
+
+
+{% block input %}
+<div class="search">
+  <form action=""  method="get">
+    <label for="text">Введите маршрут</label><br>
+    <input id="text" name="Маршрут" type="text" value={{query_c}}>
+    <input type="submit" value="Поиск">
+  </form>
+</div>
+{% endblock %}

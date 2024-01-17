@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+{% for transition in data %}
+    <div class="roads">
+            <img class='card-img2' src="data:image/png;base64,{{ transition.transition }}" alt="image" style="width:100%">
+            <li>{{transition.description}} займет {{ transition.transition_time }}</li>
+    </div>
+{% endfor %}
+{% endblock %}
+
+
