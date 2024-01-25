@@ -16,9 +16,9 @@ class Service(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="ID")
     name = models.CharField(max_length=200, verbose_name="Маршрут")
     status = models.BooleanField(default=True, verbose_name="Статус")
-    buildings = models.BinaryField(blank=True, null=True, verbose_name="Фото строений")
-    transition = models.BinaryField(blank=True, null=True, verbose_name="Фото маршрута")
-    transition_time = models.CharField(max_length=100, verbose_name="Время перехода")
+    buildings = models.CharField(max_length=200, verbose_name="Фото строений")
+    transition = models.CharField(max_length=200, verbose_name="Фото маршрута")
+    transition_time = models.IntegerField( verbose_name="Время перехода", null=True, blank=True)
     description = models.CharField(max_length=200, verbose_name="Описание")
 
 
@@ -64,10 +64,13 @@ class Request(models.Model):
         (5, 'Отклонен'),
     )
     id = models.AutoField(primary_key=True, verbose_name="ID")
-    status = models.CharField(choices=statuses, max_length=100, verbose_name="Статус")
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    completion_date = models.DateTimeField(null=True, blank=True, auto_now=True, verbose_name="Дата выполнения")
-    user = models.ForeignKey(Users, on_delete=models.CASCADE, null=True, verbose_name="Курс")
+    status = models.CharField(choices=statuses, default=1, max_length=100)
+    creation_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    formation_date = models.DateTimeField(blank=True, null=True)
+    completion_date = models.DateTimeField(blank=True, null=True)
+    moderator = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='request_moderator_set',blank=True, null=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='request_user_set', blank=True, null=True)
+    transition_time = models.IntegerField(verbose_name="Время перехода", null=True, blank=True)
 
 
 class RequestService(models.Model):

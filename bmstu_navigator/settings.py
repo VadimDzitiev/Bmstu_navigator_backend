@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-yoq*jlvhbgfxq611)$umr@cbg3^d$y4es=3aiw60(xm1$!(tp(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bmstu','bmstu_navigator',
     'rest_framework',
-   # 'corsheaders',
+    'corsheaders',
     'drf_yasg',
 
 ]
@@ -65,11 +65,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-   'http://localhost:3000',
-]
+# CORS_ALLOWED_ORIGINS = [
+#    'http://localhost:3000',
+#     'http://localhost:8080',
+# ]
 
 ROOT_URLCONF = 'bmstu_navigator.urls'
 
@@ -89,11 +91,18 @@ TEMPLATES = [
     },
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    "Authorization",
+    "Content-Type",
+]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bmstu_navigator',
+        'NAME': 'navigator',
         'USER': 'postgres',
         'PASSWORD': '1315151312',
         'HOST': 'localhost',
@@ -139,12 +148,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+KEEP_ALIVE_TIMEOUT = 60
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
+
+
     BASE_DIR / "bmstu/static/"
 ]
 

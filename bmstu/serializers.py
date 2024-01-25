@@ -11,7 +11,15 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserAppSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['email']
+
+
 class RequestSerializer(serializers.ModelSerializer):
+    user = UserAppSerializer(read_only=True)
+
     class Meta:
         # Модель, которую мы сериализуем
         model = Request
