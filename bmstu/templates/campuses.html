@@ -13,6 +13,7 @@
     <div class="card">
         <img class='card-img1' src="{% static transition.img_url %}" alt="image" style="width:100%">
         <a href="{% url 'campus_url' transition.id %}">{{ transition.from }} - {{ transition.to }}</a>
+        <p>Маршрут займет {{transition.transition_time}} минут <p>
     </div>
 {% empty %}
     <div class="card">
