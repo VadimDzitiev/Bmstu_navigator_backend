@@ -365,26 +365,23 @@ def get_request(request, id, format=None):
 
 @api_view(["PUT"])
 @permission_classes([AllowAny])
-def update_by_user(request, id):
-    if not Request.objects.filter(id=id).exists():
-        return Response(f"Заявки с таким id не существует!")
-    request_status = request.data["status"]
-    if int(request.data["status"]) not in [2, 3]:
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+def update_by_user(request):
+    ssid = request.COOKIES["access_token"]
+    try:
+        email = session_storage.get(ssid).decode('utf-8')
+        current_user = Users.objects.get(email=email)
+    except:
+        return Response('Сессия не найдена')
+    try:
+        req = get_object_or_404(Request, user_id=current_user, status=1)
+    except:
+        return Response("Такой заявки не зарегистрировано")
 
-    application = Request.objects.get(id=id)
-    app_status = application.status
-
-    if int(request.data["status"]) in [3]:
-        application.formed_at = timezone.now()
-
-    application.status = request_status
-    application.save()
-
-    serializer = RequestSerializer(application, many=False)
-    response = Response(serializer.data)
-
-    return response
+    req.status = "Черновик"
+    req.publication_date = datetime.now().date()
+    req.save()
+    serializer = RequestSerializer(req)
+    return Response(serializer.data)
 
 
 @swagger_auto_schema(method='put', request_body=RequestSerializer)
