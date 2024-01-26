@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.utils import timezone
 import datetime
+from django.http import Http404
 
 user = UserProfile.objects.get(id=1)
 
@@ -73,7 +74,7 @@ def get_service(request, id):
 
 @api_view(['Put'])
 def put_service(request, id, format=None):
-    """Обновляет информацию об услуге"""
+    """Обновляет информацию о маршруте"""
     req = get_object_or_404(Service, id=id)
     serializer = ServiceSerializer(req, data=request.data, partial=True)
     if serializer.is_valid():
@@ -153,18 +154,20 @@ def get_request(request, id, format=None):
 
 @api_view(['Put'])
 def update_by_user(request, id):
-    if not Request.objects.filter(id=id).exists():
-        return Response(f"Заявки с таким id не существует!")
+    try:
+        application = Request.objects.get(id=id)
+    except Request.DoesNotExist:
+        raise Http404("Заявки с таким id не существует!")
 
-    request_status = request.data["status"]
+    try:
+        request_status = int(request.data["status"])
+    except (KeyError, ValueError):
+        return Response("Некорректное значение 'status'", status=status.HTTP_400_BAD_REQUEST)
 
-    if int(request.data["status"]) not in [2, 3]:
+    if request_status not in [2, 3]:
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    application = Request.objects.get(id=id)
-    app_status = application.status
-
-    if int(request.data["status"]) in [3]:
+    if request_status == 3:
         application.formed_at = timezone.now()
 
     application.status = request_status
@@ -174,30 +177,33 @@ def update_by_user(request, id):
     return Response(serializer.data)
 
 
-@api_view(['PUT'])
+
+@api_view(["PUT"])
 def update_by_admin(request, id):
-    if not Request.objects.filter(id=id).exists():
-        return Response(f"Заявки с таким id нет")
+    try:
+        application = Request.objects.get(id=id)
+    except Request.DoesNotExist:
+        raise Http404("Заявки с таким id не существует!")
 
-    application = Request.objects.get(id=id)
+    try:
+        request_status = int(request.data["status"])
+    except KeyError:
+        return Response("Отсутствует ключ 'status' в данных запроса", status=status.HTTP_400_BAD_REQUEST)
+    except ValueError:
+        return Response("Значение 'status' должно быть целым числом", status=status.HTTP_400_BAD_REQUEST)
 
-    if int(application.status) == 2:
-        return Response("Такой заявки нет на проверке")
+    if request_status not in [4, 5]:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    valid_statuses = [4, 3]
-
-    # Ensure 'status' key is present in the request data
-    request_status = request.data.get("status")
-
-    if request_status is None or int(request_status) not in valid_statuses:
-        return Response("Неверный статус!")
+    if request_status == 4:
+        application.formed_at = timezone.now()
 
     application.status = request_status
-    application.publication_date = datetime.now().date()
     application.save()
 
-    serializer = RequestSerializer(application)
+    serializer = RequestSerializer(application, many=False)
     return Response(serializer.data)
+
 
 
 @api_view(['DELETE'])
