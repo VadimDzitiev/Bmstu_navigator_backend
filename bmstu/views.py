@@ -153,27 +153,22 @@ def get_request(request, id, format=None):
 
 
 @api_view(['Put'])
-def update_by_user(request, id):
+def update_by_user(request):
+    ssid = request.COOKIES["access_token"]
     try:
-        application = Request.objects.get(id=id)
-    except Request.DoesNotExist:
-        raise Http404("Заявки с таким id не существует!")
-
+        email = session_storage.get(ssid).decode('utf-8')
+        current_user = Users.objects.get(email=email)
+    except:
+        return Response('Сессия не найдена')
     try:
-        request_status = int(request.data["status"])
-    except (KeyError, ValueError):
-        return Response("Некорректное значение 'status'", status=status.HTTP_400_BAD_REQUEST)
+        req = get_object_or_404(Request, user_id=current_user, status=1)
+    except:
+        return Response("Такой заявки не зарегистрировано")
 
-    if request_status not in [2, 3]:
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    if request_status == 3:
-        application.formed_at = timezone.now()
-
-    application.status = request_status
-    application.save()
-
-    serializer = RequestSerializer(application, many=False)
+    req.status = "Черновик"
+    req.publication_date = datetime.now().date()
+    req.save()
+    serializer = RequestSerializer(req)
     return Response(serializer.data)
 
 
