@@ -10,8 +10,8 @@ class Service(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     status = models.BooleanField(blank=True, null=True)
-    buildings = models.BinaryField(blank=True, null=True)
-    transition = models.BinaryField(blank=True, null=True)
+    buildings = models.CharField(blank=True, null=True)
+    transition = models.CharField(blank=True, null=True)
     transition_time = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=200, blank=True, null=True)
 
