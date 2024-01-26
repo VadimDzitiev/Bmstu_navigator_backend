@@ -50,7 +50,7 @@ urlpatterns = [
 
     path(r'Requests/', get_requests, name='requests-list'),#+
     path(r'Requests/<int:id>/', get_request, name='request'),#+
-    path(r'Requests/<int:id>/update_by_user/', update_by_user, name='update_by_user'),#+
+    path(r'Requests/update_by_user/', update_by_user, name='update_by_user'),#+
     path(r'Requests/<int:id>/update_by_admin/', update_by_admin, name='update_by_admin'),#+
     path(r'Requests/<int:id>/delete/', del_request, name='request-delete'),#+
     path(r'Requests/<int:request_id>/delete_service/<int:service_id>/', delete_service_from_request, name='delete_service_from_request'),#+
