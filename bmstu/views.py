@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from django.utils import timezone
 import datetime
 from django.http import Http404
-
+from minio import Minio
 user = UserProfile.objects.get(id=1)
 
 
@@ -39,27 +39,31 @@ def post_service(request, format=None):
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     new_service = serializer.save()
+     client = Minio(
+        endpoint="localhost:9000",
+        access_key="minioadmin",
+        secret_key="minioadmin",
+        secure=False,
+    )
+    bucket_name = 'img'
+    file_name = file.name
+    file_path = "http://localhost:9000/navigator-images/" + file_name
 
-    client = Minio(endpoint="localhost:9000",
-                   access_key='minioadmin',
-                   secret_key='minioadmin',
-                   secure=False)
-    i = new_service.id - 1
     try:
-        i = new_service.name
-        img_rout_name = f"{i}.png"
-        file_path = f"assets/img/{request.data.get('image')}"
-        client.fput_object(bucket_name='pics',
-                           object_name=img_rout_name,
-                           file_path=file_path)
-        new_service.image = f"http://localhost:9000/img/{img_rout_name}"
-        new_service.save()
-    except Exception as e:
-        return Response({"error": str(e)})
+        client.put_object(bucket_name, file_name, file, length=file.size, content_type=file.content_type)
+        print("Файл успешно загружен в Minio.")
 
-    service = Service.objects.filter(status=True)
-    serializer = ServiceSerializer(service, many=True)
-    return Response(serializer.data)
+        serializer = ServiceSerializer(instance=subscription, data={'image': file_path}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse('Image uploaded successfully.')
+        else:
+            return HttpResponseBadRequest('Invalid data.')
+    except Exception as e:
+        print("Ошибка при загрузке файла в Minio:", str(e))
+        return HttpResponseServerError('An error occurred during file upload.')
+
+return HttpResponseBadRequest('Invalid request.')
 
 
 @api_view(['Get'])
